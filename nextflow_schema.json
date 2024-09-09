@@ -6,7 +6,7 @@
     "description": "Assembly, and annotation of bacterial genomes.",
     "demo_url": "https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-bacterial-genomes/wf-bacterial-genomes-demo.tar.gz",
     "aws_demo_url": "https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-bacterial-genomes/wf-bacterial-genomes-demo/aws.nextflow.config",
-    "url": "https://github.com/Global-Capacity-Building-DTU-FOOD/SeqAfrica-workflow.git",
+    "url": "https://github.com/Global-Capacity-Building-DTU-FOOD/SeqAfrica-workflow",
     "type": "object",
     "properties": {
         "fastq": {
