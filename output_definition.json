@@ -72,22 +72,6 @@
       "optional": true,
       "type": "per-sample"
     },
-    "variants": {
-      "filepath": "{{ alias }}.medaka.vcf.gz",
-      "title": "Variants VCF file",
-      "description": "VCF file of variants detected against the provided reference (Reference mode only).",
-      "mime-type": "application/gzip",
-      "optional": true,
-      "type": "per-sample"
-    },
-    "variants_stats": {
-      "filepath": "{{ alias }}.variants.stats",
-      "title": "Variants summary",
-      "description": "TSV file of summary statistics for variants in sample (Reference mode only).",
-      "mime-type": "text/tab-seperated-values",
-      "optional": true,
-      "type": "per-sample"
-    },
     "annotation": {
       "filepath": "{{ alias }}.prokka.gff",
       "title": "Annotations files",

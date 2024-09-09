@@ -5,7 +5,7 @@ include:
 
 variables:
     # chunk_size here forces multiple chunks even for test data which better exercises some channels
-    NF_WORKFLOW_OPTS: "--fastq test_data/fastq --reference_based_assembly --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000"
+    NF_WORKFLOW_OPTS: "--fastq test_data/fastq --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000"
     NF_IGNORE_PROCESSES: "deNovo"
     CI_FLAVOUR: "new"
 
@@ -38,16 +38,6 @@ docker-run:
               NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 32GB \
                   --fastq test_data/fastq --threads 3 --chunk_size 100000 --flye_opts '--genome-size 25k'"
               NF_IGNORE_PROCESSES: "medakaVariant,medakaVariantHdf,makePerSampleReports"
-        - if: $MATRIX_NAME == "reference-based"
-          variables:
-              NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 16GB \
-              --fastq test_data/fastq --reference_based_assembly --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000"
-              NF_IGNORE_PROCESSES: "deNovo,assemblyStats,runProkka,makePerSampleReports"
-        - if: $MATRIX_NAME == "check-model"
-          variables:
-              NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 16GB \
-              --fastq test_data/fastq --reference_based_assembly --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000"
-              NF_IGNORE_PROCESSES: "deNovo,assemblyStats,runProkka,makePerSampleReports"
         - if: $MATRIX_NAME == "amr"
           variables:
               NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 32GB \

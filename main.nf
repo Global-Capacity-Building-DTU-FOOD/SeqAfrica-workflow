@@ -697,7 +697,6 @@ workflow calling_pipeline {
 
         accumulateCheckpoints.scan(
         ingress_checkpoint.mix(
-            alignment_checkpoint,
             assembly_checkpoint,
             variant_checkpoint,
             annotation_checkpoint,
