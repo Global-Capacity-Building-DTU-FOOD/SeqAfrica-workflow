@@ -35,26 +35,7 @@
                     "description": "A JSON file of key value pairs to display on the report.",
                     "help_text": "This is used to populate a table of additional information (for example, about upstream components of an assay) to the workflow report.",
                     "hidden": true
-                }
-            },
-            "allOf": [
-                {
-                    "oneOf": [
-                        {
-                            "required": [
-                                "fastq"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        "samples": {
-            "title": "Sample Options",
-            "type": "object",
-            "fa_icon": "fas fa-vials",
-            "description": "Parameters that relate to samples such as sample sheets and sample names.",
-            "properties": {
+                },
                 "sample_sheet": {
                     "type": "string",
                     "title": "Sample sheet",
@@ -65,19 +46,11 @@
                 "sample": {
                     "type": "string",
                     "description": "A single sample name for non-multiplexed data. Permissible if passing a single .fastq(.gz) file or directory of .fastq(.gz) files."
-                }
-            }
-        },
-        "isolate_options": {
-            "title": "Isolate options",
-            "type": "object",
-            "fa_icon": "fas fa-arrow-left",
-            "description": "Parameters relating to antimicrobial resistance analysis with ResFinder.",
-            "properties": {
+                },
                 "isolates": {
                     "type": "boolean",
                     "title": "Isolates mode",
-                    "default": false,
+                    "default": true,
                     "description": "Run the Isolates pipeline on the assembly results if set to True.",
                     "help_text": "Isolates mode adds further analysis options to the workflow such as multi-locus sequence typing and antimicrobial resistance calling, as well as producing single reports for each sample in the run."
                 },
@@ -94,8 +67,11 @@
                     "default": "0.6",
                     "description": "Minimum coverage (breadth-of) threshold required to report a match between a gene in the ResFinder database and the assembly. Valid interval: 0.00-1.00",
                     "help_text": "The amount of an AMR gene that has to be present within the assembly as compared to the reference in the ResFinder database."
-                }
-            }
+                },
+
+
+            },
+
         },
         "advanced_options": {
             "title": "Advanced Options",
@@ -152,7 +128,7 @@
                     "type": "boolean",
                     "title": "Annotate genome with Prokka",
                     "description": "Run prokka on consensus sequence",
-                    "default": true,
+                    "default": false,
                     "help_text": "Will provide an output file with a list of annotations for your sequence. Optional because it can take some time."
                 },
                 "prokka_opts": {
@@ -181,7 +157,7 @@
                 },
                 "min_read_length": {
                     "type": "integer",
-                    "default": 1000,
+                    "default": 200,
                     "Title": "Minimum read length",
                     "description": "Reads below this threshold will be removed from analysis."
                 }
