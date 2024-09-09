@@ -1,7 +1,3 @@
-# Set a global concurrency limit for the pipeline
-concurrency:
-  limit: 1  # This limits the number of concurrent jobs to 1
-
 include:
     - project: "epi2melabs/ci-templates"
       file: "wf-containers.yaml"
@@ -9,7 +5,7 @@ include:
 
 variables:
     # chunk_size here forces multiple chunks even for test data which better exercises some channels
-    NF_WORKFLOW_OPTS: "--fastq test_data/fastq --threads 4 --chunk_size 100000"
+    NF_WORKFLOW_OPTS: "--fastq test_data/fastq --reference_based_assembly --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000"
     NF_IGNORE_PROCESSES: "deNovo"
     CI_FLAVOUR: "new"
 
@@ -17,11 +13,10 @@ variables:
 docker-run:
     parallel:
         matrix:
-            - MATRIX_NAME: [de-novo, amr, barcode04, mixed-species, de-novo-advanced_options, de-novo-bam]
+            - MATRIX_NAME: [de-novo, amr, barcode04, mixed-species, reference-iso, de-novo-advanced_options, de-novo-bam]
               TAG: [large_ram]
             - MATRIX_NAME: [reference-based, check-model, sample-sheet]
               TAG: [""]
-        max_parallel: 1 # limits  parallel jobs to 1
     tags:
         - $TAG
     rules:
@@ -43,11 +38,27 @@ docker-run:
               NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 32GB \
                   --fastq test_data/fastq --threads 3 --chunk_size 100000 --flye_opts '--genome-size 25k'"
               NF_IGNORE_PROCESSES: "medakaVariant,medakaVariantHdf,makePerSampleReports"
+        - if: $MATRIX_NAME == "reference-based"
+          variables:
+              NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 16GB \
+              --fastq test_data/fastq --reference_based_assembly --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000"
+              NF_IGNORE_PROCESSES: "deNovo,assemblyStats,runProkka,makePerSampleReports"
+        - if: $MATRIX_NAME == "check-model"
+          variables:
+              NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 16GB \
+              --fastq test_data/fastq --reference_based_assembly --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000"
+              NF_IGNORE_PROCESSES: "deNovo,assemblyStats,runProkka,makePerSampleReports"
         - if: $MATRIX_NAME == "amr"
           variables:
               NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 32GB \
                   --fastq s3://ont-exd-int-s3-euwst1-epi2me-labs/wf-bacterial-genomes/test_data/isolates_fastq --sample_sheet test_data/isolates_sample_sheet.csv --threads 3 --chunk_size 100000 --isolates --client_fields test_data/client_fields.json --override_basecaller_cfg dna_r10.4.1_e8.2_400bps_hac@v3.5.2"
               NF_IGNORE_PROCESSES: "runProkka,medakaVariant,medakaVariantHdf,makePerSampleReports"
+        - if: $MATRIX_NAME == "sample-sheet"
+          variables:
+              NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 16GB \
+              --fastq test_data/fastq --reference_based_assembly --reference test_data/ref/reference.subseq.fa.gz --threads 4 --chunk_size 100000 \
+                  --sample_sheet test_data/sample_sheet.csv"
+              NF_IGNORE_PROCESSES: "deNovo,assemblyStats,runProkka,makePerSampleReports"
         - if: $MATRIX_NAME == "barcode04"
           # isolates barcode04 only has 4 reads and flye will fail due to low coverage
           variables:
