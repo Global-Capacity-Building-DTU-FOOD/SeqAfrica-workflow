@@ -1,12 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",
-    "title": "Global-Capacity-Building-DTU-FOOD/SeqAfrica-workflow",
+    "title": "epi2me-labs/wf-bacterial-genomes",
     "workflow_title" : "Bacterial assembly and annotation workflow",
     "description": "Assembly, variant calling, and annotation of bacterial genomes.",
     "demo_url": "https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-bacterial-genomes/wf-bacterial-genomes-demo.tar.gz",
     "aws_demo_url": "https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-bacterial-genomes/wf-bacterial-genomes-demo/aws.nextflow.config",
-    "url": "https://github.com/Global-Capacity-Building-DTU-FOOD/SeqAfrica-workflow",
+    "url": "https://github.com/epi2me-labs/wf-bacterial-genomes",
     "type": "object",
     "definitions": {
         "input": {
@@ -22,6 +22,27 @@
                     "description": "FASTQ files to use in the analysis.",
                     "help_text": "This accepts one of three cases: (i) the path to a single FASTQ file; (ii) the path to a top-level directory containing FASTQ files; (iii) the path to a directory containing one level of sub-directories which in turn contain FASTQ files. In the first and second case, a sample name can be supplied with `--sample`. In the last case, the data is assumed to be multiplexed with the names of the sub-directories as barcodes. In this case, a sample sheet can be provided with `--sample_sheet`."
                 },
+                "bam": {
+                    "type": "string",
+                    "title": "BAM",
+                    "format": "path",
+                    "description": "BAM or unaligned BAM (uBAM) files to use in the analysis.",
+                    "help_text": "This accepts one of three cases: (i) the path to a single BAM file; (ii) the path to a top-level directory containing BAM files; (iii) the path to a directory containing one level of sub-directories which in turn contain BAM files. In the first and second case, a sample name can be supplied with `--sample`. In the last case, the data is assumed to be multiplexed with the names of the sub-directories as barcodes. In this case, a sample sheet can be provided with `--sample_sheet`."
+                },
+                "reference_based_assembly": {
+                    "type": "boolean",
+                    "default": false,   
+                    "title": "Reference-based assembly",
+                    "help_text": "By default de novo assembly will be performed with Flye. Enable this to instead perform a reference-based consensus. A reference must be provided.",
+                    "description": "Enable reference guided assembly instead of de novo assembly."
+                },
+                "reference": {
+                    "type": "string",
+                    "title": "Reference FASTA",
+                    "format": "file-path",
+                    "description": "Reference sequence FASTA file.",
+                    "help_text": "The reference sequence is used when performing reference-based assembly."
+                },
                 "analyse_unclassified": {
                     "type": "boolean",
                     "default": false,
@@ -35,7 +56,36 @@
                     "description": "A JSON file of key value pairs to display on the report.",
                     "help_text": "This is used to populate a table of additional information (for example, about upstream components of an assay) to the workflow report.",
                     "hidden": true
-                },
+                }
+            },
+            "allOf": [
+                {
+                    "oneOf": [
+                        {
+                            "required": [
+                                "fastq"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "bam"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "dependencies": {
+                "reference": [
+                    "reference_based_assembly"
+                ]
+            }
+        },
+        "samples": {
+            "title": "Sample Options",
+            "type": "object",
+            "fa_icon": "fas fa-vials",
+            "description": "Parameters that relate to samples such as sample sheets and sample names.",
+            "properties": {
                 "sample_sheet": {
                     "type": "string",
                     "title": "Sample sheet",
@@ -46,11 +96,19 @@
                 "sample": {
                     "type": "string",
                     "description": "A single sample name for non-multiplexed data. Permissible if passing a single .fastq(.gz) file or directory of .fastq(.gz) files."
-                },
+                }
+            }
+        },
+        "isolate_options": {
+            "title": "Isolate options",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-left",
+            "description": "Parameters relating to antimicrobial resistance analysis with ResFinder.",
+            "properties": {
                 "isolates": {
                     "type": "boolean",
                     "title": "Isolates mode",
-                    "default": true,
+                    "default": false,
                     "description": "Run the Isolates pipeline on the assembly results if set to True.",
                     "help_text": "Isolates mode adds further analysis options to the workflow such as multi-locus sequence typing and antimicrobial resistance calling, as well as producing single reports for each sample in the run."
                 },
@@ -64,14 +122,11 @@
                 "resfinder_coverage": {
                     "type": "string",
                     "title": "Resfinder gene coverage threshold",
-                    "default": "0.8",
+                    "default": "0.6",
                     "description": "Minimum coverage (breadth-of) threshold required to report a match between a gene in the ResFinder database and the assembly. Valid interval: 0.00-1.00",
                     "help_text": "The amount of an AMR gene that has to be present within the assembly as compared to the reference in the ResFinder database."
                 }
-
-
             }
-
         },
         "advanced_options": {
             "title": "Advanced Options",
@@ -128,7 +183,7 @@
                     "type": "boolean",
                     "title": "Annotate genome with Prokka",
                     "description": "Run prokka on consensus sequence",
-                    "default": false,
+                    "default": true,
                     "help_text": "Will provide an output file with a list of annotations for your sequence. Optional because it can take some time."
                 },
                 "prokka_opts": {
@@ -157,7 +212,7 @@
                 },
                 "min_read_length": {
                     "type": "integer",
-                    "default": 200,
+                    "default": 1000,
                     "Title": "Minimum read length",
                     "description": "Reads below this threshold will be removed from analysis."
                 }
@@ -227,7 +282,13 @@
             "$ref": "#/definitions/input"
         },
         {
+            "$ref": "#/definitions/samples"
+        },
+        {
             "$ref": "#/definitions/output"
+        },
+        {
+            "$ref": "#/definitions/isolate_options"
         },
         {
             "$ref": "#/definitions/advanced_options"
