@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",
-    "title": "Global-Capacity-Building-DTU-FOOD/SeqAfrica-workflow.git",
+    "title": "SeqAfrica-workflow",
     "workflow_title": "Bacterial assembly and annotation workflow",
     "description": "Assembly, and annotation of bacterial genomes.",
     "demo_url": "https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-bacterial-genomes/wf-bacterial-genomes-demo.tar.gz",
