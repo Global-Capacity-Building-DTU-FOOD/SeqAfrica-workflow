@@ -227,13 +227,7 @@
             "$ref": "#/definitions/input"
         },
         {
-            "$ref": "#/definitions/samples"
-        },
-        {
             "$ref": "#/definitions/output"
-        },
-        {
-            "$ref": "#/definitions/isolate_options"
         },
         {
             "$ref": "#/definitions/advanced_options"
