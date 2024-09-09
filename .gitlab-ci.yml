@@ -1,3 +1,7 @@
+# Set a global concurrency limit for the pipeline
+concurrency:
+  limit: 1  # This limits the number of concurrent jobs to 1
+  
 include:
     - project: "epi2melabs/ci-templates"
       file: "wf-containers.yaml"
@@ -17,6 +21,7 @@ docker-run:
               TAG: [large_ram]
             - MATRIX_NAME: [reference-based, check-model, sample-sheet]
               TAG: [""]
+        max_parallel: 1 # limits  parallel jobs to 1
     tags:
         - $TAG
     rules:
