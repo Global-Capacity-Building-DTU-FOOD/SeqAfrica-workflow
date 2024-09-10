@@ -1,12 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",
-    "title": "epi2me-labs/wf-bacterial-genomes",
+    "title": "Global-Capacity-Building-DTU-FOOD/SeqAfrica-workflow",
     "workflow_title" : "Bacterial assembly and annotation workflow",
     "description": "Assembly, variant calling, and annotation of bacterial genomes.",
     "demo_url": "https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-bacterial-genomes/wf-bacterial-genomes-demo.tar.gz",
     "aws_demo_url": "https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-bacterial-genomes/wf-bacterial-genomes-demo/aws.nextflow.config",
-    "url": "https://github.com/epi2me-labs/wf-bacterial-genomes",
+    "url": "https://github.com/Global-Capacity-Building-DTU-FOOD/SeqAfrica-workflow",
     "type": "object",
     "definitions": {
         "input": {
