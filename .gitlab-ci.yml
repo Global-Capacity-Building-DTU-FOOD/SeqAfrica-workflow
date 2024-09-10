@@ -1,10 +1,9 @@
 concurrency:
-    limit: 1
+    limit: 1  # This ensures only one job runs at a time
 
 include:
     - project: "epi2melabs/ci-templates"
       file: "wf-containers.yaml"
-
 
 variables:
     # chunk_size here forces multiple chunks even for test data which better exercises some channels
@@ -12,19 +11,22 @@ variables:
     NF_IGNORE_PROCESSES: "deNovo"
     CI_FLAVOUR: "new"
 
-
 docker-run:
     parallel:
         matrix:
+            # Add max_parallel for each section to limit concurrency
             - MATRIX_NAME: [de-novo, amr, barcode04, mixed-species, reference-iso, de-novo-advanced_options, de-novo-bam]
               TAG: [large_ram]
+              max_parallel: 1  # Add this to limit parallel jobs
             - MATRIX_NAME: [reference-based, check-model, sample-sheet]
               TAG: [""]
-              max_parallel: 1  # This limits the number of parallel jobs to 1
+              max_parallel: 1  # Continue limiting parallel jobs to 1
+
     tags:
         - $TAG
+
     rules:
-        # Reference-based assembly requires 16GB, de novo requires 32GB
+        # Define memory limits and conditions for specific matrix jobs
         - if: ($CI_COMMIT_BRANCH == null || $CI_COMMIT_BRANCH == "dev-template")
           when: never
         - if: $MATRIX_NAME == "de-novo"
@@ -54,7 +56,6 @@ docker-run:
                   --sample_sheet test_data/sample_sheet.csv"
               NF_IGNORE_PROCESSES: "deNovo,assemblyStats,runProkka,makePerSampleReports"
         - if: $MATRIX_NAME == "barcode04"
-          # isolates barcode04 only has 4 reads and flye will fail due to low coverage
           variables:
               NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 32GB \
               --fastq s3://ont-exd-int-s3-euwst1-epi2me-labs/wf-bacterial-genomes/test_data/isolates_fastq/barcode04 \
@@ -66,7 +67,6 @@ docker-run:
               NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 32GB \
               --fastq s3://ont-exd-int-s3-euwst1-epi2me-labs/wf-bacterial-genomes/test_data/isolates_fastq --sample_sheet test_data/isolates_mixed_sample_sheet.csv --threads 3 --chunk_size 100000 --isolates --override_basecaller_cfg dna_r10.4.1_e8.2_400bps_hac@v3.5.2"
               NF_IGNORE_PROCESSES: "runProkka,medakaVariant,medakaVariantHdf"
-        # serotyping
         - if: $MATRIX_NAME == "reference-iso"
           variables:
               NF_WORKFLOW_OPTS: "-executor.\\$$local.memory 16GB \
